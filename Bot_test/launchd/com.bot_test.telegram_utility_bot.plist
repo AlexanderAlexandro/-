@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.bot_test.telegram_utility_bot</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/a.vostretsov/Downloads/Bot_test/.venv/bin/python</string>
+        <string>/Users/a.vostretsov/Downloads/Bot_test/main.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/a.vostretsov/Downloads/Bot_test</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/a.vostretsov/Downloads/Bot_test/runtime/launchd.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/a.vostretsov/Downloads/Bot_test/runtime/launchd.stderr.log</string>
+</dict>
+</plist>
