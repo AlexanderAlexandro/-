@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Flow | Онлайн-конвертер валют</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <div class="hero-topbar">
+          <p class="eyebrow">Currency Flow</p>
+          <div class="language-switch" role="group" aria-label="Language switcher" data-i18n-attr="aria-label:language.aria">
+            <button class="language-switch__button is-active" type="button" data-language="ru" aria-pressed="true">RU</button>
+            <button class="language-switch__button" type="button" data-language="en" aria-pressed="false">EN</button>
+          </div>
+        </div>
+        <h1 data-i18n="hero.title">Онлайн-конвертер валют с актуальными курсами</h1>
+        <p class="lead" data-i18n="hero.lead">
+          Пересчитывайте суммы между мировыми валютами в реальном времени. Курсы загружаются из Frankfurter API
+          и автоматически обновляются при каждом изменении суммы или пары валют.
+        </p>
+
+        <div class="hero-meta" aria-label="Преимущества" data-i18n-attr="aria-label:hero.metaAria">
+          <div class="meta-pill" data-i18n="hero.pillLive">Живые данные</div>
+          <div class="meta-pill" data-i18n="hero.pillInstant">Мгновенный пересчёт</div>
+          <div class="meta-pill" data-i18n="hero.pillMobile">Удобно на мобильных устройствах</div>
+        </div>
+      </div>
+
+      <section class="converter-card" aria-labelledby="converterTitle">
+        <div class="card-top">
+          <div>
+            <p class="card-kicker" data-i18n="converter.kicker">Конвертер</p>
+            <h2 id="converterTitle" data-i18n="converter.title">Перевод суммы по текущему курсу</h2>
+          </div>
+          <div id="liveBadge" class="live-badge" aria-live="polite">Подключение к API</div>
+        </div>
+
+        <form class="converter-form" novalidate>
+          <label class="field amount-field" for="amountInput">
+            <span class="field-label" data-i18n="converter.amountLabel">Сумма</span>
+            <div class="input-shell">
+              <input
+                id="amountInput"
+                name="amount"
+                type="number"
+                min="0"
+                step="any"
+                inputmode="decimal"
+                placeholder="Введите сумму"
+                data-i18n-attr="placeholder:converter.amountPlaceholder"
+                value="100"
+                autocomplete="off"
+              />
+              <span class="field-footnote" data-i18n="converter.amountFootnote">Автопересчёт без кнопки подтверждения</span>
+            </div>
+          </label>
+
+          <div class="pair-grid">
+            <label class="field" for="fromCurrency">
+              <span class="field-label" data-i18n="converter.fromLabel">Из валюты</span>
+              <div class="select-shell currency-picker" data-picker="from">
+                <select id="fromCurrency" name="fromCurrency" aria-label="Исходная валюта" data-i18n-attr="aria-label:converter.fromAria" class="native-select sr-only"></select>
+                <div class="currency-trigger-shell">
+                  <button class="currency-trigger" type="button" data-role="trigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="currency-trigger__code" data-role="code">USD</span>
+                    <span class="currency-trigger__name" data-role="name">Выберите валюту</span>
+                  </button>
+                  <button class="currency-arrow" type="button" data-role="arrow" aria-label="Показать все валюты" data-i18n-attr="aria-label:converter.showAllCurrencies">
+                    <span aria-hidden="true">⌄</span>
+                  </button>
+                </div>
+                <div class="currency-dropdown" data-role="dropdown" hidden>
+                  <div class="currency-search-shell">
+                    <input class="currency-search" type="search" data-role="search" placeholder="Введите код или название валюты" data-i18n-attr="placeholder:converter.searchPlaceholder;aria-label:converter.searchPlaceholder" autocomplete="off" />
+                  </div>
+                  <div class="currency-options" data-role="options" role="listbox" aria-label="Список валют" data-i18n-attr="aria-label:converter.currencyListAria"></div>
+                </div>
+              </div>
+            </label>
+
+            <button id="swapButton" class="swap-button" type="button" aria-label="Поменять валюты местами" data-i18n-attr="aria-label:converter.swapAria">
+              <span class="swap-button__icon" aria-hidden="true">⇄</span>
+              <span class="swap-button__text" data-i18n="converter.swap">Обмен</span>
+            </button>
+
+            <label class="field" for="toCurrency">
+              <span class="field-label" data-i18n="converter.toLabel">В валюту</span>
+              <div class="select-shell currency-picker" data-picker="to">
+                <select id="toCurrency" name="toCurrency" aria-label="Целевая валюта" data-i18n-attr="aria-label:converter.toAria" class="native-select sr-only"></select>
+                <div class="currency-trigger-shell">
+                  <button class="currency-trigger" type="button" data-role="trigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="currency-trigger__code" data-role="code">RUB</span>
+                    <span class="currency-trigger__name" data-role="name">Выберите валюту</span>
+                  </button>
+                  <button class="currency-arrow" type="button" data-role="arrow" aria-label="Показать все валюты" data-i18n-attr="aria-label:converter.showAllCurrencies">
+                    <span aria-hidden="true">⌄</span>
+                  </button>
+                </div>
+                <div class="currency-dropdown" data-role="dropdown" hidden>
+                  <div class="currency-search-shell">
+                    <input class="currency-search" type="search" data-role="search" placeholder="Введите код или название валюты" data-i18n-attr="placeholder:converter.searchPlaceholder;aria-label:converter.searchPlaceholder" autocomplete="off" />
+                  </div>
+                  <div class="currency-options" data-role="options" role="listbox" aria-label="Список валют" data-i18n-attr="aria-label:converter.currencyListAria"></div>
+                </div>
+              </div>
+            </label>
+          </div>
+        </form>
+
+        <section class="result-card" aria-live="polite" aria-atomic="true">
+          <div class="result-topline">
+            <p class="result-label" data-i18n="result.label">Результат</p>
+            <div class="result-glow-pill" data-i18n="result.pill">Актуальные данные</div>
+          </div>
+          <div class="result-row">
+            <div>
+              <p id="resultValue" class="result-value">Введите сумму</p>
+              <p id="resultHint" class="result-hint">Конвертация появится сразу после ввода данных.</p>
+            </div>
+            <div id="resultState" class="result-state is-idle">Ожидание</div>
+          </div>
+
+          <div class="result-divider" aria-hidden="true"></div>
+
+          <div class="details-grid">
+            <div class="detail-card">
+              <span class="detail-label" data-i18n="result.currentRateLabel">Текущий курс</span>
+              <strong id="rateLine">Выберите валютную пару</strong>
+            </div>
+            <div class="detail-card">
+              <span class="detail-label" data-i18n="result.sourceLabel">Источник и время</span>
+              <strong id="updatedLine">Данные будут показаны после загрузки.</strong>
+            </div>
+          </div>
+
+          <div id="statusBox" class="status-box is-neutral">
+            Готово к расчёту. Используются актуальные онлайн-данные Frankfurter API.
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <section class="chart-card" aria-labelledby="chartTitle">
+      <div class="chart-head">
+        <div>
+          <p class="chart-kicker" data-i18n="chart.kicker">Динамика курса</p>
+          <h2 id="chartTitle" class="chart-title" data-i18n="chart.title">Историческое движение выбранной валютной пары</h2>
+          <p id="chartSubtitle" class="chart-subtitle">
+            Показываем, как менялся курс выбранной пары за последний период.
+          </p>
+        </div>
+
+        <div class="chart-controls" role="tablist" aria-label="Период графика" data-i18n-attr="aria-label:chart.periodAria">
+          <button class="chart-range-button is-active" type="button" data-range="7" aria-pressed="true" data-i18n="chart.rangeWeek">Неделя</button>
+          <button class="chart-range-button" type="button" data-range="30" aria-pressed="false" data-i18n="chart.rangeMonth">Месяц</button>
+          <button class="chart-range-button" type="button" data-range="365" aria-pressed="false" data-i18n="chart.rangeYear">Год</button>
+        </div>
+      </div>
+
+      <div class="chart-meta">
+        <div class="chart-stat">
+          <span class="chart-stat__label" data-i18n="chart.minLabel">Минимум</span>
+          <strong id="chartMin">-</strong>
+        </div>
+        <div class="chart-stat">
+          <span class="chart-stat__label" data-i18n="chart.maxLabel">Максимум</span>
+          <strong id="chartMax">-</strong>
+        </div>
+        <div class="chart-stat">
+          <span class="chart-stat__label" data-i18n="chart.latestLabel">Последняя точка</span>
+          <strong id="chartLatest">-</strong>
+        </div>
+      </div>
+
+      <div class="chart-visual-shell">
+        <div id="chartStateBox" class="chart-state is-loading">Загружаем исторические данные…</div>
+        <svg id="historyChart" class="history-chart" viewBox="0 0 760 320" role="img" aria-label="График динамики курса" data-i18n-attr="aria-label:chart.aria"></svg>
+      </div>
+
+      <section class="forecast-card" aria-labelledby="forecastTitle">
+        <div class="forecast-head">
+          <div>
+            <p class="chart-kicker" data-i18n="forecast.kicker">Предполагаемая оценка</p>
+            <h2 id="forecastTitle" class="forecast-title" data-i18n="forecast.title">Модельная оценка курса</h2>
+            <p id="forecastSummary" class="forecast-summary">
+              Оценка строится по длинной истории курса и обновляется при смене пары валют.
+            </p>
+            <p id="forecastDeltaLine" class="forecast-delta-line">Базовый сценарий на 30 дней: -</p>
+          </div>
+          <div id="forecastDirection" class="forecast-badge is-neutral">Ожидание данных</div>
+        </div>
+
+        <div class="forecast-meta-strip" aria-label="Как считается оценка" data-i18n-attr="aria-label:forecast.metaAria">
+          <div class="forecast-meta-pill" data-i18n="forecast.metaHistory">История для оценки: 365 дней</div>
+          <div class="forecast-meta-pill" data-i18n="forecast.metaFact">График выше показывает факт</div>
+          <div class="forecast-meta-pill" data-i18n="forecast.metaSeparate">Оценка считается отдельно</div>
+        </div>
+
+        <div class="forecast-grid">
+          <div class="forecast-metric forecast-metric--spot">
+            <span class="forecast-metric__label" data-i18n="forecast.spotLabel">Текущий курс</span>
+            <strong id="forecastSpot">-</strong>
+            <span id="forecastSpotContext" class="forecast-metric__range">-</span>
+          </div>
+          <div id="forecastTomorrowCard" class="forecast-metric forecast-metric--horizon">
+            <span class="forecast-metric__label" data-i18n="forecast.tomorrowLabel">На завтра</span>
+            <strong id="forecastTomorrow">-</strong>
+            <span id="forecastTomorrowDelta" class="forecast-metric__delta">-</span>
+            <span id="forecastTomorrowRange" class="forecast-metric__range">-</span>
+          </div>
+          <div id="forecastWeekCard" class="forecast-metric forecast-metric--horizon">
+            <span class="forecast-metric__label" data-i18n="forecast.weekLabel">Через 7 дней</span>
+            <strong id="forecastWeek">-</strong>
+            <span id="forecastWeekDelta" class="forecast-metric__delta">-</span>
+            <span id="forecastWeekRange" class="forecast-metric__range">-</span>
+          </div>
+          <div id="forecastMonthCard" class="forecast-metric forecast-metric--horizon forecast-metric--month">
+            <span class="forecast-metric__label" data-i18n="forecast.monthLabel">Через 30 дней</span>
+            <strong id="forecastMonth">-</strong>
+            <span id="forecastMonthDelta" class="forecast-metric__delta">-</span>
+            <span id="forecastMonthRange" class="forecast-metric__range">-</span>
+          </div>
+          <div class="forecast-metric forecast-metric--confidence">
+            <span class="forecast-metric__label" data-i18n="forecast.confidenceLabel">Уверенность модели</span>
+            <strong id="forecastConfidence">-</strong>
+            <span id="forecastContext" class="forecast-metric__range">-</span>
+          </div>
+        </div>
+
+        <div class="forecast-signal-bar">
+          <div class="forecast-signal-tile">
+            <span class="forecast-signal-tile__label" data-i18n="forecast.signalLabel">Сила сигнала</span>
+            <strong id="forecastSignalStrength">-</strong>
+          </div>
+          <div class="forecast-signal-tile">
+            <span class="forecast-signal-tile__label" data-i18n="forecast.volatilityLabel">Волатильность</span>
+            <strong id="forecastVolatility">-</strong>
+          </div>
+          <div class="forecast-signal-tile">
+            <span class="forecast-signal-tile__label" data-i18n="forecast.modeLabel">Режим модели</span>
+            <strong id="forecastMode">-</strong>
+          </div>
+        </div>
+
+        <div class="forecast-toolbar">
+          <div class="forecast-mode-switch" role="tablist" aria-label="Режим модели" data-i18n-attr="aria-label:forecast.modeSwitchAria">
+            <button class="forecast-mode-button is-active" type="button" data-forecast-mode="conservative" aria-pressed="true" data-i18n="forecast.modeConservative">Консервативный</button>
+            <button class="forecast-mode-button" type="button" data-forecast-mode="neutral" aria-pressed="false" data-i18n="forecast.modeNeutral">Нейтральный</button>
+            <button class="forecast-mode-button" type="button" data-forecast-mode="aggressive" aria-pressed="false" data-i18n="forecast.modeAggressive">Агрессивный</button>
+          </div>
+          <button id="copyForecastButton" class="copy-forecast-button" type="button" data-i18n="forecast.copy">Скопировать вывод</button>
+        </div>
+
+        <div id="forecastReason" class="forecast-reason">
+          Модель ожидает загрузки данных для объяснения сценария.
+        </div>
+
+        <div id="forecastInsight" class="forecast-insight">
+          Ключевой вывод модели появится после загрузки исторических данных.
+        </div>
+
+        <div class="forecast-legend" data-i18n="forecast.legend">
+          Как читать модель: график выше показывает фактическое движение пары, а блок ниже даёт сценарную оценку по годовой истории. Стрелка показывает направление, `Δ к текущему` показывает относительное изменение, диапазон показывает коридор возможного движения при текущей волатильности.
+        </div>
+
+        <div id="forecastDisclaimer" class="forecast-disclaimer" data-i18n="forecast.disclaimer">
+          Предполагаемая оценка: ориентир по историческим данным и текущей волатильности, не инвестиционная рекомендация.
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

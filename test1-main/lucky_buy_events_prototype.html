@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lucky Buy | Events Flow Prototype</title>
+  <style>
+    :root {
+      --bg: #0e1117;
+      --panel: #181d27;
+      --panel-2: #202735;
+      --panel-3: #272f40;
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f8f5ef;
+      --text-soft: #c8c3bb;
+      --text-dim: #8c8a87;
+      --gold: #ffbf2d;
+      --gold-strong: #ff9d00;
+      --blue: #1279ff;
+      --brown: #522e1c;
+      --orange: #ea6d0d;
+      --green: #31bf3a;
+      --success: #41cf82;
+      --danger: #ff6b5f;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius-xl: 34px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 191, 45, 0.14), transparent 24%),
+        radial-gradient(circle at 85% 12%, rgba(18, 121, 255, 0.12), transparent 22%),
+        linear-gradient(180deg, #0a0d14 0%, #131824 100%);
+      color: var(--text);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 24px;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(26, 31, 43, 0.95), rgba(18, 22, 31, 0.92));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      padding: 20px;
+      align-self: start;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-soft);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--gold), var(--gold-strong));
+      box-shadow: 0 0 0 4px rgba(255, 191, 45, 0.15);
+    }
+
+    .sidebar h1 {
+      margin: 16px 0 10px;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .sidebar p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .section-label {
+      margin: 22px 0 10px;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .state-list,
+    .action-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .state-button,
+    .action-button {
+      appearance: none;
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      padding: 13px 14px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      background: linear-gradient(180deg, #222a3a, #161d2b);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .state-button:hover,
+    .action-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 191, 45, 0.3);
+    }
+
+    .state-button.is-active {
+      border-color: rgba(255, 191, 45, 0.45);
+      background: linear-gradient(180deg, rgba(255, 191, 45, 0.2), rgba(255, 145, 0, 0.12));
+      box-shadow: 0 12px 24px rgba(255, 157, 0, 0.14);
+    }
+
+    .state-button strong,
+    .action-button strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .state-button span,
+    .action-button span {
+      display: block;
+      color: var(--text-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .action-button.primary {
+      background: linear-gradient(180deg, #ffc93d, #ffad1a);
+      color: #462600;
+      font-weight: 800;
+      box-shadow: 0 14px 26px rgba(255, 173, 26, 0.24);
+    }
+
+    .action-button.primary span {
+      color: rgba(70, 38, 0, 0.8);
+    }
+
+    .prototype-meta {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .prototype-meta strong {
+      color: var(--text);
+    }
+
+    .stage {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(400px, 430px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .phone-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone-shell {
+      padding: 14px;
+      border-radius: 42px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      padding: 10px;
+      border-radius: 34px;
+      background: linear-gradient(180deg, #10141c, #07090e);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+    }
+
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 26px;
+      background: #16161a;
+    }
+
+    .state-screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    .state-screen.is-active {
+      display: block;
+    }
+
+    .phone-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px 8px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .phone-status .network {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #225fd4, #1646a4);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .phone-status .icons {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 14px;
+    }
+
+    .hub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px 16px;
+      background: #1e1b20;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .hub-nav {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      color: #f6f0e6;
+      font-size: 14px;
+    }
+
+    .nav-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #dfbd7f;
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, #ffe783, transparent 28%),
+        radial-gradient(circle at 70% 70%, rgba(155, 63, 19, 0.6), transparent 30%),
+        linear-gradient(135deg, #b47a3d, #6b3d11);
+      border: 3px solid rgba(255, 222, 160, 0.45);
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.15);
+    }
+
+    .promo-bar {
+      position: relative;
+      margin: 0;
+      padding: 20px 24px 18px 92px;
+      background: linear-gradient(90deg, #1167d8, #1d91ff 46%, #0e60c7);
+      color: #ffcc56;
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 1.25;
+      text-transform: uppercase;
+      box-shadow: inset 0 -4px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .promo-bar::before {
+      content: "🎁";
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      background: linear-gradient(180deg, #4eb6ff, #0966ff);
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    .events-scroll {
+      height: calc(100% - 155px);
+      padding: 18px 18px 24px;
+      overflow: hidden;
+      background: #242127;
+    }
+
+    .event-card {
+      position: relative;
+      margin-bottom: 22px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 2px solid rgba(244, 191, 89, 0.42);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .event-card__hero {
+      min-height: 280px;
+      padding: 22px;
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .event-card--dubai .event-card__hero {
+      background:
+        radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.18), transparent 16%),
+        linear-gradient(180deg, #ff8010, #ca4100 85%);
+    }
+
+    .event-card--shop .event-card__hero {
+      min-height: 220px;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.26), transparent 20%),
+        linear-gradient(180deg, #64ccff, #1b73d8 85%);
+    }
+
+    .event-card--space .event-card__hero {
+      min-height: 220px;
+      background:
+        radial-gradient(circle at 65% 40%, rgba(255, 255, 255, 0.18), transparent 16%),
+        linear-gradient(180deg, #1137d1, #081965 85%);
+    }
+
+    .city-shapes,
+    .chip-cluster,
+    .space-ship {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .city-shapes::before,
+    .city-shapes::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40%;
+      height: 70%;
+      background:
+        linear-gradient(180deg, transparent 0, transparent 18%, rgba(103, 19, 0, 0.9) 18%, rgba(103, 19, 0, 0.9) 100%);
+      clip-path: polygon(0 100%, 0 42%, 11% 42%, 11% 18%, 19% 18%, 19% 60%, 27% 60%, 27% 33%, 34% 33%, 34% 100%);
+      opacity: 0.85;
+    }
+
+    .city-shapes::after {
+      left: auto;
+      right: 4%;
+      width: 28%;
+      height: 88%;
+      clip-path: polygon(14% 100%, 30% 18%, 52% 18%, 71% 100%, 100% 100%, 100% 6%, 85% 0, 60% 8%, 40% 0, 15% 10%, 0 100%);
+      background: rgba(99, 18, 0, 0.72);
+    }
+
+    .dubai-logo {
+      position: absolute;
+      left: 50%;
+      top: 36%;
+      transform: translateX(-50%);
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: #ff5342;
+      text-shadow:
+        0 0 0 #691100,
+        0 0 16px rgba(255, 255, 255, 0.45),
+        0 0 30px rgba(255, 30, 0, 0.45);
+    }
+
+    .chip-cluster::before,
+    .chip-cluster::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 5px solid rgba(255, 255, 255, 0.88);
+      box-shadow: 0 0 22px rgba(255, 255, 255, 0.3);
+    }
+
+    .chip-cluster::before {
+      width: 84px;
+      height: 84px;
+      left: 120px;
+      top: 152px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+    }
+
+    .chip-cluster::after {
+      width: 72px;
+      height: 72px;
+      left: 198px;
+      top: 158px;
+      border-color: rgba(103, 255, 128, 0.9);
+      box-shadow: 0 0 22px rgba(53, 255, 121, 0.24);
+    }
+
+    .coins-stack {
+      position: absolute;
+      right: 12px;
+      top: 54px;
+      width: 226px;
+      height: 126px;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 22% 62%, rgba(255, 239, 177, 0.98) 0 15%, rgba(245, 185, 43, 0.98) 15% 31%, rgba(177, 110, 7, 0.94) 31% 37%, transparent 38%),
+        radial-gradient(circle at 48% 50%, rgba(255, 239, 177, 0.98) 0 15%, rgba(245, 185, 43, 0.98) 15% 31%, rgba(177, 110, 7, 0.94) 31% 37%, transparent 38%),
+        radial-gradient(circle at 77% 56%, rgba(255, 239, 177, 0.98) 0 17%, rgba(239, 175, 34, 0.98) 17% 35%, rgba(164, 101, 7, 0.94) 35% 41%, transparent 42%),
+        radial-gradient(circle at 40% 82%, rgba(255, 255, 255, 0.22), transparent 12%),
+        radial-gradient(circle at 63% 26%, rgba(255, 255, 255, 0.18), transparent 10%);
+      filter: saturate(1.05);
+    }
+
+    .coins-stack::before,
+    .coins-stack::after {
+      content: none;
+    }
+
+    .shop-assets {
+      position: absolute;
+      inset: 0;
+    }
+
+    .chip-stack {
+      position: absolute;
+      bottom: 38px;
+      width: 54px;
+      border-radius: 12px 12px 8px 8px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .chip-stack.orange { left: 88px; height: 116px; background: linear-gradient(180deg, #fdb765, #d76c00); }
+    .chip-stack.red { left: 142px; height: 148px; background: linear-gradient(180deg, #ff8b8b, #bb2a2a); }
+    .chip-stack.violet { left: 200px; height: 168px; background: linear-gradient(180deg, #9c7bff, #5a3bb9); }
+    .chip-stack.gold { left: 260px; height: 132px; background: linear-gradient(180deg, #ffe389, #be8920); }
+
+    .shop-assets::before {
+      content: "";
+      position: absolute;
+      bottom: 36px;
+      right: 34px;
+      width: 110px;
+      height: 64px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffd56e, #ca8c05);
+      transform: rotate(-18deg);
+      box-shadow: 0 16px 26px rgba(0, 0, 0, 0.2);
+    }
+
+    .shop-assets::after {
+      content: "";
+      position: absolute;
+      bottom: 26px;
+      left: 124px;
+      width: 116px;
+      height: 64px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #daf6ff, #8fd6ff);
+      transform: rotate(-11deg);
+      box-shadow: 0 14px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    .space-ship::before {
+      content: "";
+      position: absolute;
+      left: 130px;
+      top: 34px;
+      width: 160px;
+      height: 140px;
+      border-radius: 50% 50% 45% 45%;
+      background:
+        radial-gradient(circle at 50% 70%, #ff9831, transparent 22%),
+        linear-gradient(180deg, #edf3ff, #9cbcff);
+      transform: rotate(16deg);
+      box-shadow: 0 18px 26px rgba(0, 0, 0, 0.26);
+    }
+
+    .event-card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 14px;
+      padding: 16px 20px 18px;
+      background: linear-gradient(180deg, rgba(58, 20, 11, 0.28), rgba(41, 21, 18, 0.92));
+    }
+
+    .event-card--shop .event-card__footer {
+      background: linear-gradient(180deg, rgba(15, 38, 73, 0.28), rgba(18, 45, 77, 0.92));
+    }
+
+    .event-card--space .event-card__footer {
+      background: linear-gradient(180deg, rgba(10, 17, 58, 0.22), rgba(12, 20, 72, 0.94));
+    }
+
+    .event-card__meta {
+      max-width: 54%;
+    }
+
+    .event-card__kicker {
+      color: #e7be70;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .event-card__title {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.05;
+      color: #fff9ef;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .event-card__title--shop {
+      font-size: 24px;
+      line-height: 1.15;
+    }
+
+    .event-badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: rgba(63, 49, 43, 0.92);
+      color: #fff;
+      font-size: 28px;
+      line-height: 1;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta {
+      position: relative;
+      border: 0;
+      padding: 18px 24px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffcf34, #ffaf12);
+      color: #8e3d00;
+      font-weight: 900;
+      font-size: 22px;
+      text-transform: uppercase;
+      box-shadow: 0 12px 24px rgba(255, 168, 20, 0.24);
+    }
+
+    .cta--shop {
+      min-width: 188px;
+    }
+
+    .bonus-dot {
+      position: absolute;
+      left: -10px;
+      top: -18px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #3fc72f, #11860f);
+      color: #fff;
+      font-size: 28px;
+      font-weight: 900;
+      border: 4px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .home-indicator {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    .popup-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 6, 10, 0.54);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 18px 78px;
+    }
+
+    .lucky-popup {
+      position: relative;
+      width: min(100%, 364px);
+      max-height: 730px;
+      border-radius: 32px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(255, 180, 76, 0.16), transparent 24%),
+        linear-gradient(180deg, #191d29, #12161f 74%);
+      border: 1px solid rgba(255, 203, 71, 0.24);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    .lucky-popup__hero {
+      padding: 22px 22px 16px;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255, 201, 61, 0.18), transparent 20%),
+        linear-gradient(180deg, #2b1d12, #17141d);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.22);
+      color: #fff;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .lucky-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 191, 45, 0.14);
+      color: #ffd96d;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .lucky-title {
+      margin: 0 52px 14px 0;
+      font-size: 40px;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+    }
+
+    .lucky-copy {
+      color: var(--text-soft);
+      line-height: 1.22;
+      font-size: 16px;
+      margin-bottom: 0;
+    }
+
+    .mode-grid {
+      padding: 16px 22px 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .mode-card {
+      position: relative;
+      border-radius: 24px;
+      padding: 16px 18px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.035));
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .mode-card[data-mode]::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .mode-card.is-selected {
+      border-color: rgba(255, 203, 103, 0.84);
+      box-shadow:
+        0 0 0 1px rgba(255, 231, 166, 0.12),
+        0 16px 30px rgba(255, 170, 55, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .mode-card.is-selected::before {
+      content: "✓";
+      display: grid;
+      place-items: center;
+      color: #5f3100;
+      font-size: 13px;
+      font-weight: 900;
+      border-color: rgba(255, 212, 112, 0.96);
+      background: linear-gradient(180deg, #ffd973, #ffb629);
+      box-shadow: 0 8px 18px rgba(255, 181, 41, 0.22);
+    }
+
+    .mode-card--base {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .mode-card--featured {
+      border-color: rgba(255, 204, 104, 0.74);
+      background:
+        radial-gradient(circle at 82% 20%, rgba(255, 210, 96, 0.15), transparent 18%),
+        linear-gradient(180deg, rgba(71, 45, 19, 0.98), rgba(34, 27, 26, 0.98));
+      box-shadow:
+        0 18px 34px rgba(255, 157, 0, 0.12),
+        inset 0 1px 0 rgba(255, 233, 177, 0.08);
+    }
+
+    .mode-card--featured::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(255, 229, 161, 0.12);
+    }
+
+    .mode-card--featured .mode-value {
+      color: #ffd977;
+      font-size: 36px;
+      text-shadow: 0 0 18px rgba(255, 199, 88, 0.08);
+    }
+
+    .mode-card--featured .mode-tags span {
+      background: rgba(255, 198, 79, 0.1);
+      color: #ffd978;
+    }
+
+    .mode-row {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .mode-card strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 0;
+      line-height: 1.05;
+      padding-right: 34px;
+    }
+
+    .mode-card__eyebrow {
+      color: #e8bc7c;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .mode-value {
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 0.98;
+      margin-top: 2px;
+      color: #fff9ef;
+    }
+
+    .mode-tags {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mode-tags span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f4d28a;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    .popup-footer {
+      padding: 16px 22px 22px;
+    }
+
+    .popup-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .popup-button {
+      border: 0;
+      border-radius: 18px;
+      min-height: 60px;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .popup-button.primary {
+      background: linear-gradient(180deg, #ffd04d, #ffac11);
+      color: #723300;
+      box-shadow: 0 16px 28px rgba(255, 166, 13, 0.22);
+    }
+
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 18px 12px;
+      background: #303238;
+      color: #fff;
+    }
+
+    .browser-left,
+    .browser-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 22px;
+    }
+
+    .browser-domain {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .browser-domain strong {
+      display: block;
+      font-size: 25px;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .browser-domain span {
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 13px;
+    }
+
+    .checkout-screen {
+      background: #ececf1;
+      color: #1f2025;
+      height: calc(100% - 62px);
+      overflow: hidden;
+    }
+
+    .checkout-hero {
+      padding: 20px 20px 18px;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255, 238, 170, 0.35), transparent 28%),
+        linear-gradient(180deg, #9a5b00, #5d3414 90%);
+      color: #fff;
+      min-height: 300px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .checkout-hero::before,
+    .checkout-hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffdf76, #a56a00);
+      opacity: 0.92;
+    }
+
+    .checkout-hero::before {
+      width: 180px;
+      height: 180px;
+      left: -84px;
+      top: -96px;
+      opacity: 0.18;
+      filter: blur(6px);
+    }
+
+    .checkout-hero::after {
+      width: 210px;
+      height: 210px;
+      right: -110px;
+      top: -78px;
+      opacity: 0.16;
+      filter: blur(6px);
+    }
+
+    .hero-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kg-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 226, 135, 0.45);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 24px;
+      color: #ffd467;
+    }
+
+    .checkout-copy {
+      position: relative;
+      z-index: 1;
+      margin-top: 62px;
+      max-width: 190px;
+    }
+
+    .checkout-copy p {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+
+    .checkout-copy h2 {
+      margin: 0 0 22px;
+      font-size: 72px;
+      line-height: 0.94;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .price-breakdown {
+      position: relative;
+      z-index: 1;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 4px solid rgba(255, 255, 255, 0.92);
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .price-row.total {
+      margin-top: 18px;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .checkout-body {
+      padding: 16px 14px 18px;
+    }
+
+    .methods {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .method-card {
+      min-height: 92px;
+      border-radius: 18px;
+      border: 2px solid #d7d7de;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 10px;
+      font-size: 22px;
+      color: #1e1f24;
+    }
+
+    .method-card.is-active {
+      border-color: #e9be4d;
+    }
+
+    .field-box {
+      background: #fff;
+      border: 2px solid #e0e0e6;
+      border-radius: 18px;
+      padding: 18px 18px;
+      font-size: 24px;
+      color: #2a2d36;
+      margin-bottom: 16px;
+    }
+
+    .card-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: #fff;
+      border: 2px solid #e9be4d;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .card-box__left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 20px;
+      color: #24262d;
+    }
+
+    .visa {
+      width: 90px;
+      height: 54px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #dbdde6;
+      color: #3151bf;
+      font-size: 28px;
+      font-weight: 900;
+      background: #fff;
+    }
+
+    .card-check {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #ffd247, #ffb000);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .add-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fff;
+      border: 2px solid #d7d7de;
+      border-radius: 18px;
+      padding: 20px 18px;
+      margin-bottom: 18px;
+      color: #3f73d7;
+      font-size: 22px;
+    }
+
+    .pay-button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 22px 20px;
+      background: linear-gradient(180deg, #ffc833, #ffb100);
+      color: #7a3600;
+      font-size: 28px;
+      font-weight: 900;
+      box-shadow: 0 16px 28px rgba(255, 177, 0, 0.2);
+    }
+
+    .legal-copy {
+      margin-top: 14px;
+      text-align: center;
+      color: #6f7280;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .appcharge {
+      margin-top: 16px;
+      text-align: center;
+      color: #1e2026;
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .processing-screen {
+      background: #4b4b4b;
+      height: calc(100% - 62px);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 32px;
+    }
+
+    .processing-content h2 {
+      margin: 0 0 12px;
+      font-size: 56px;
+      line-height: 0.96;
+    }
+
+    .processing-content p {
+      margin: 0 0 30px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .spinner {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 10px solid rgba(255, 255, 255, 0.28);
+      border-top-color: #fff;
+      border-right-color: #6a24ff;
+      margin: 0 auto;
+      animation: spin 1.3s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .success-screen,
+    .reward-screen {
+      background:
+        radial-gradient(circle at top center, rgba(255, 211, 96, 0.18), transparent 22%),
+        linear-gradient(180deg, #171b26, #0f1219 76%);
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+    }
+
+    .success-card,
+    .reward-card {
+      width: 100%;
+      border-radius: 30px;
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #59e18e, #1f9f5c);
+      color: #fff;
+      font-size: 44px;
+      font-weight: 900;
+      box-shadow: 0 18px 30px rgba(65, 207, 130, 0.24);
+    }
+
+    .success-card h2,
+    .reward-card h2 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .success-card p,
+    .reward-card p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.38;
+      font-size: 14px;
+    }
+
+    .success-summary {
+      margin: 18px 0 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .success-pill {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .success-action {
+      width: 100%;
+      margin-top: 22px;
+      border: 0;
+      border-radius: 18px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, #ffd04d, #ffad12);
+      color: #723300;
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 18px 28px rgba(255, 168, 20, 0.22);
+    }
+
+    .reward-glow {
+      width: 180px;
+      height: 180px;
+      margin: 4px auto 16px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255, 233, 138, 0.95), rgba(255, 189, 47, 0.6) 28%, rgba(255, 170, 0, 0.18) 54%, transparent 70%);
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .reward-pack {
+      width: 120px;
+      height: 120px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.42), transparent 18%),
+        linear-gradient(180deg, #ffcf59, #8c5100);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+      position: relative;
+    }
+
+    .reward-pack::before,
+    .reward-pack::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffe38b, #d78f00);
+    }
+
+    .reward-pack::before {
+      width: 48px;
+      height: 48px;
+      left: 12px;
+      top: 30px;
+    }
+
+    .reward-pack::after {
+      width: 40px;
+      height: 40px;
+      right: 12px;
+      top: 36px;
+    }
+
+    .reward-chipbar {
+      margin: 16px 0 12px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .reward-chip {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.84);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .reward-chip.red { background: linear-gradient(180deg, #ff8f8f, #b82828); }
+    .reward-chip.gold { background: linear-gradient(180deg, #ffe18b, #b78100); }
+    .reward-chip.green { background: linear-gradient(180deg, #77f98e, #1a9c45); }
+
+    .reward-box {
+      margin: 12px 0 0;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: left;
+    }
+
+    .reward-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 18px;
+    }
+
+    .reward-boost {
+      margin: 10px 0 0;
+      padding: 14px 16px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255, 201, 74, 0.18), rgba(255, 145, 0, 0.08));
+      border: 1px solid rgba(255, 206, 93, 0.3);
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255, 234, 182, 0.08);
+    }
+
+    .reward-boost__eyebrow {
+      color: #ffd978;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .reward-boost strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .reward-boost span {
+      color: #f9e0a4;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .reward-actions {
+      margin-top: 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .reward-actions button {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 18px 20px;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .reward-actions .primary {
+      background: linear-gradient(180deg, #ffd04d, #ffab11);
+      color: #723300;
+    }
+
+    .reward-actions .secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .storyboard {
+      padding: 20px;
+    }
+
+    .storyboard h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.04em;
+    }
+
+    .storyboard p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    .screen-detail {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+      border: 1px solid var(--line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .screen-detail__step {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 191, 45, 0.12);
+      color: #ffd978;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .screen-detail h3 {
+      margin: 14px 0 16px;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .screen-detail__grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .screen-detail__item {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .screen-detail__label {
+      margin-bottom: 8px;
+      color: #ffd978;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .screen-detail__item p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .stage {
+        grid-template-columns: 1fr;
+      }
+
+      .phone-wrap {
+        order: 1;
+      }
+
+      .storyboard {
+        order: 2;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .layout {
+        padding: 14px;
+      }
+
+      .phone-shell {
+        padding: 10px;
+      }
+
+      .phone {
+        width: min(100vw - 48px, 390px);
+        height: 844px;
+      }
+
+      .popup-overlay {
+        padding: 38px 18px 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar panel">
+      <div class="eyebrow">Lucky Buy prototype</div>
+      <h1>Lucky Buy flow</h1>
+      <p>
+        Интерактивный мобильный прототип для сценария:
+        <strong>страница Events → pop-up → checkout → успешная покупка → итоговая награда</strong>.
+      </p>
+
+      <div class="section-label">Состояния</div>
+      <div class="state-list" id="stateList">
+        <button class="state-button is-active" type="button" data-target="events">
+          <strong>1. Страница Events</strong>
+          <span>Базовый экран с карточками и точкой входа в Lucky Buy.</span>
+        </button>
+        <button class="state-button" type="button" data-target="popup">
+          <strong>2. Pop-up Lucky Buy</strong>
+          <span>Новый слой поверх Events с продающей упаковкой, выгодой и выбором режима.</span>
+        </button>
+        <button class="state-button" type="button" data-target="checkout">
+          <strong>3. Экран покупки</strong>
+          <span>Реальный checkout-паттерн с пакетом, суммой и оплатой.</span>
+        </button>
+        <button class="state-button" type="button" data-target="processing">
+          <strong>4. Processing</strong>
+          <span>Промежуточное состояние обработки платежа.</span>
+        </button>
+        <button class="state-button" type="button" data-target="success">
+          <strong>5. Удачная покупка</strong>
+          <span>Подтверждение успешной оплаты Lucky Buy.</span>
+        </button>
+        <button class="state-button" type="button" data-target="reward">
+          <strong>6. Итоговая награда</strong>
+          <span>Финальный reveal с наградой относительно обычного Pack.</span>
+        </button>
+      </div>
+
+      <div class="section-label">Сценарий</div>
+      <div class="action-list">
+        <button class="action-button primary" type="button" id="playFlow">
+          <strong>Проиграть весь сценарий</strong>
+          <span>Пошагово проведет по основному happy-path.</span>
+        </button>
+        <button class="action-button" type="button" id="nextState">
+          <strong>Следующий экран</strong>
+          <span>Ручной переход к следующему состоянию.</span>
+        </button>
+        <button class="action-button" type="button" id="prevState">
+          <strong>Предыдущий экран</strong>
+          <span>Вернуться на шаг назад.</span>
+        </button>
+      </div>
+
+      <div class="prototype-meta">
+        <strong>Экономика для прототипа:</strong><br />
+        обычный магазин: <strong>$30 ≈ 30 000 000 фишек</strong>.<br />
+        обычный <strong>Pack в макете ≈ 3 000 000 фишек</strong>.<br />
+        `Спокойный` режим: до <strong>4 500 000</strong>, компенсация <strong>1 500 000</strong>.<br />
+        `Смелый` режим: до <strong>6 000 000</strong>, компенсация <strong>900 000</strong>.
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="phone-wrap">
+        <div class="phone-shell">
+          <div class="phone">
+            <div class="screen">
+              <section class="state-screen is-active" data-state="events">
+                <div class="phone-status">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:26px;">17:40</span>
+                    <span class="network">Личность</span>
+                  </div>
+                  <div class="icons">◔21</div>
+                </div>
+                <div class="hub-header">
+                  <div class="hub-nav">
+                    <div class="nav-item">
+                      <div class="nav-icon">☰</div>
+                      <div>Меню</div>
+                    </div>
+                    <div class="nav-item">
+                      <div class="nav-icon">♠</div>
+                      <div>Магазин</div>
+                    </div>
+                  </div>
+                  <div class="profile">
+                    <div style="text-align:right;">
+                      <div style="font-size:18px; font-weight:700;">Галстук</div>
+                      <div style="font-size:20px; color:#fff;">10 VIP</div>
+                    </div>
+                    <div class="avatar"></div>
+                  </div>
+                </div>
+                <div class="promo-bar">Покупайте в Games HUB с постоянным бонусом 30%</div>
+                <div class="events-scroll">
+                  <article class="event-card event-card--dubai">
+                    <div class="event-card__hero">
+                      <div class="city-shapes"></div>
+                      <div class="chip-cluster"></div>
+                      <div class="dubai-logo">DUBAI</div>
+                      <div class="event-badge">6 ДНЕЙ</div>
+                    </div>
+                    <div class="event-card__footer">
+                      <div class="event-card__meta">
+                        <div class="event-card__kicker">Event pass</div>
+                        <h2 class="event-card__title">Дубай</h2>
+                      </div>
+                      <button class="cta" type="button" data-open-popup>
+                        <span class="bonus-dot">1</span>
+                        Lucky Buy
+                      </button>
+                    </div>
+                  </article>
+
+                  <article class="event-card event-card--shop">
+                    <div class="event-card__hero">
+                      <div class="shop-assets">
+                        <div class="chip-stack orange"></div>
+                        <div class="chip-stack red"></div>
+                        <div class="chip-stack violet"></div>
+                        <div class="chip-stack gold"></div>
+                      </div>
+                    </div>
+                    <div class="event-card__footer">
+                      <div class="event-card__meta">
+                        <div class="event-card__kicker">Магазин</div>
+                        <h2 class="event-card__title event-card__title--shop">На 30% выгоднее, чем в приложении</h2>
+                      </div>
+                      <button class="cta cta--shop" type="button">В магазин</button>
+                    </div>
+                  </article>
+
+                  <article class="event-card event-card--space">
+                    <div class="event-card__hero">
+                      <div class="space-ship"></div>
+                      <div class="event-badge">10 ДНЕЙ</div>
+                    </div>
+                  </article>
+                </div>
+                <div class="home-indicator"></div>
+              </section>
+
+              <section class="state-screen" data-state="popup">
+                <div class="phone-status">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:26px;">17:40</span>
+                    <span class="network">Личность</span>
+                  </div>
+                  <div class="icons">◔21</div>
+                </div>
+                <div class="hub-header">
+                  <div class="hub-nav">
+                    <div class="nav-item">
+                      <div class="nav-icon">☰</div>
+                      <div>Меню</div>
+                    </div>
+                    <div class="nav-item">
+                      <div class="nav-icon">♠</div>
+                      <div>Магазин</div>
+                    </div>
+                  </div>
+                  <div class="profile">
+                    <div style="text-align:right;">
+                      <div style="font-size:18px; font-weight:700;">Галстук</div>
+                      <div style="font-size:20px; color:#fff;">10 VIP</div>
+                    </div>
+                    <div class="avatar"></div>
+                  </div>
+                </div>
+                <div class="promo-bar">Покупайте в Games HUB с постоянным бонусом 30%</div>
+                <div class="events-scroll">
+                  <article class="event-card event-card--dubai">
+                    <div class="event-card__hero">
+                      <div class="city-shapes"></div>
+                      <div class="chip-cluster"></div>
+                      <div class="dubai-logo">DUBAI</div>
+                      <div class="event-badge">6 ДНЕЙ</div>
+                    </div>
+                    <div class="event-card__footer">
+                      <div class="event-card__meta">
+                        <div class="event-card__kicker">Event pass</div>
+                        <h2 class="event-card__title">Дубай</h2>
+                      </div>
+                      <button class="cta" type="button">
+                        <span class="bonus-dot">1</span>
+                        Lucky Buy
+                      </button>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="popup-overlay">
+                  <div class="lucky-popup">
+                    <button class="popup-close" type="button" data-go="events">×</button>
+                    <div class="lucky-popup__hero">
+                      <h2 class="lucky-title">Рискнешь ради большего?</h2>
+                      <div class="lucky-copy">
+                        Pack дает 3 млн. Здесь можно забрать больше.
+                      </div>
+                    </div>
+
+                    <div class="mode-grid">
+                      <div class="mode-card mode-card--featured is-selected" data-mode="bold">
+                        <div class="mode-row">
+                          <div>
+                            <strong>Смелый</strong>
+                          </div>
+                        </div>
+                        <div class="mode-value">до 6 млн</div>
+                        <div class="mode-tags">
+                          <span>0,9 млн если мимо</span>
+                        </div>
+                      </div>
+
+                      <div class="mode-card" data-mode="safe">
+                        <div class="mode-row">
+                          <div>
+                            <strong>Спокойный</strong>
+                          </div>
+                        </div>
+                        <div class="mode-value">до 4,5 млн</div>
+                        <div class="mode-tags">
+                          <span>1,5 млн если мимо</span>
+                        </div>
+                      </div>
+
+                      <div class="mode-card mode-card--base" data-mode="base">
+                        <div class="mode-row">
+                          <div>
+                            <strong>Pack</strong>
+                          </div>
+                        </div>
+                        <div class="mode-value">3 млн</div>
+                        <div class="mode-tags">
+                          <span>без риска</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="popup-footer">
+                      <div class="popup-actions">
+                        <button class="popup-button primary" id="popupPrimaryAction" type="button" data-go="checkout">Рискнуть за $3,99</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="home-indicator"></div>
+              </section>
+
+              <section class="state-screen" data-state="checkout">
+                <div class="phone-status">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:26px;">17:36</span>
+                    <span class="network" style="background:linear-gradient(180deg,#18813b,#10632e);">Highway</span>
+                  </div>
+                  <div class="icons">◔22</div>
+                </div>
+                <div class="browser-bar">
+                  <div class="browser-left">
+                    <span>×</span>
+                    <span>⌄</span>
+                  </div>
+                  <div class="browser-domain">
+                    <strong>games-hub.a...</strong>
+                    <span>games-hub.app</span>
+                  </div>
+                  <div class="browser-right">
+                    <span>↗</span>
+                    <span>▯</span>
+                    <span>⋮</span>
+                  </div>
+                </div>
+                <div class="checkout-screen">
+                  <div class="checkout-hero">
+                    <div class="hero-topline">
+                      <div class="kg-logo">kg</div>
+                      <div style="font-size:26px;">Details ▾</div>
+                    </div>
+                    <div class="coins-stack"></div>
+                    <div class="checkout-copy">
+                      <p>Pack</p>
+                      <h2>$3,99</h2>
+                    </div>
+                    <div class="price-breakdown">
+                      <div class="price-row">
+                        <span>Subtotal</span>
+                        <strong>$3,32</strong>
+                      </div>
+                      <div class="price-row">
+                        <span>Tax (20%)</span>
+                        <strong>$0,67</strong>
+                      </div>
+                      <div class="price-row total">
+                        <span>Total</span>
+                        <strong>$3,99</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="checkout-body">
+                    <div class="methods">
+                      <div class="method-card is-active">
+                        <div style="font-size:30px;">▣</div>
+                        <div>Card</div>
+                      </div>
+                      <div class="method-card">
+                        <div style="font-size:28px; color:#1cca6b;">link</div>
+                        <div>Link</div>
+                      </div>
+                      <div class="method-card">
+                        <div style="font-size:30px; color:#3459b9;">P</div>
+                        <div>PayPal</div>
+                      </div>
+                    </div>
+
+                    <div class="field-box">alexanderdisaer@gmail.com</div>
+                    <div class="card-box">
+                      <div class="card-box__left">
+                        <div>Pay with</div>
+                        <div class="visa">VISA</div>
+                        <div>****4242</div>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:14px;">
+                        <div class="card-check">✓</div>
+                        <div style="font-size:26px;">⋮</div>
+                      </div>
+                    </div>
+                    <div class="add-card">
+                      <div style="font-size:34px;">＋</div>
+                      <div>Add New Card</div>
+                    </div>
+                    <button class="pay-button" type="button" data-go="processing">Pay $3,99</button>
+                    <div class="legal-copy">
+                      By clicking "Pay" you indicate that you have read, understood and agree to Appcharge's EULA and Privacy Policy
+                    </div>
+                    <div class="appcharge">appcharge</div>
+                  </div>
+                </div>
+                <div class="home-indicator"></div>
+              </section>
+
+              <section class="state-screen" data-state="processing">
+                <div class="phone-status">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:26px;">17:36</span>
+                    <span class="network" style="background:linear-gradient(180deg,#18813b,#10632e);">Highway</span>
+                  </div>
+                  <div class="icons">◔22</div>
+                </div>
+                <div class="browser-bar">
+                  <div class="browser-left">
+                    <span>×</span>
+                    <span>⌄</span>
+                  </div>
+                  <div class="browser-domain">
+                    <strong>games-hub.a...</strong>
+                    <span>games-hub.app</span>
+                  </div>
+                  <div class="browser-right">
+                    <span>↗</span>
+                    <span>▯</span>
+                    <span>⋮</span>
+                  </div>
+                </div>
+                <div class="processing-screen">
+                  <div class="processing-content">
+                    <h2>Processing</h2>
+                    <p>This will only take a few moments...</p>
+                    <div class="spinner"></div>
+                  </div>
+                </div>
+                <div class="home-indicator"></div>
+              </section>
+
+              <section class="state-screen" data-state="success">
+                <div class="success-screen">
+                  <div class="success-card">
+                    <div class="success-icon">✓</div>
+                    <h2>Покупка прошла успешно</h2>
+                    <p>Оплата Lucky Buy подтверждена. Осталось открыть результат и забрать свою награду.</p>
+
+                    <div class="success-summary">
+                      <div class="success-pill">Pack • $3,99 • обычная цена</div>
+                      <div class="success-pill" id="successPotential">Потенциально до 4 500 000 фишек</div>
+                      <div class="success-pill" id="successMode">Режим: Спокойный</div>
+                    </div>
+
+                    <button class="success-action" id="successPrimaryAction" type="button" data-go="reward">Открыть Lucky Buy</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="state-screen" data-state="reward">
+                <div class="reward-screen">
+                  <div class="reward-card">
+                    <div class="lucky-badge" style="margin:0 auto 14px; width:max-content;">Lucky Buy result</div>
+                    <h2 id="rewardTitle">Хороший заход</h2>
+                    <p id="rewardSubtitle">5 млн за те же $3,99.</p>
+
+                    <div class="reward-glow">
+                      <div class="reward-pack"></div>
+                    </div>
+
+                    <div class="reward-chipbar">
+                      <div class="reward-chip red"></div>
+                      <div class="reward-chip gold"></div>
+                      <div class="reward-chip green"></div>
+                    </div>
+
+                    <div class="reward-boost" id="rewardBoostCard">
+                      <div class="reward-boost__eyebrow">Риск дал больше</div>
+                      <strong id="rewardBoost">+2 000 000</strong>
+                      <span id="rewardCompare">5 млн вместо 3 млн</span>
+                    </div>
+
+                    <div class="reward-box">
+                      <strong id="rewardAmount">Награда: 5 000 000</strong>
+                      <div id="rewardDelta">Следующий заход может дать еще больше.</div>
+                    </div>
+
+                    <div class="reward-actions">
+                      <button class="primary" id="rewardPrimaryAction" type="button" data-go="popup">Еще раз рискнуть</button>
+                      <button class="secondary" type="button" data-go="events">Вернуться в Events</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="storyboard panel">
+        <h2>Описание шага</h2>
+        <p>
+          Эта панель поясняет активный экран: что именно видит игрок и какую роль этот шаг играет в общем сценарии Lucky Buy.
+        </p>
+
+        <div class="screen-detail">
+          <div class="screen-detail__step" id="detailStep">Шаг 1</div>
+          <h3 id="detailTitle">Экран страницы Events</h3>
+          <div class="screen-detail__grid">
+            <div class="screen-detail__item">
+              <div class="screen-detail__label">Что видит игрок</div>
+              <p id="detailVisual">Страницу Events с привычными карточками и точкой входа в Lucky Buy внутри текущего интерфейса.</p>
+            </div>
+            <div class="screen-detail__item">
+              <div class="screen-detail__label">Что происходит</div>
+              <p id="detailAction">Игрок еще не выбрал акцию. Это спокойный вход в сценарий без разрыва основного пользовательского флоу.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const states = ["events", "popup", "checkout", "processing", "success", "reward"];
+    const screens = document.querySelectorAll(".state-screen");
+    const stateButtons = document.querySelectorAll(".state-button");
+    const modeCards = document.querySelectorAll(".mode-card");
+    const nextButton = document.getElementById("nextState");
+    const prevButton = document.getElementById("prevState");
+    const playFlowButton = document.getElementById("playFlow");
+    const successPotential = document.getElementById("successPotential");
+    const successMode = document.getElementById("successMode");
+    const rewardTitle = document.getElementById("rewardTitle");
+    const rewardSubtitle = document.getElementById("rewardSubtitle");
+    const rewardAmount = document.getElementById("rewardAmount");
+    const rewardDelta = document.getElementById("rewardDelta");
+    const popupPrimaryAction = document.getElementById("popupPrimaryAction");
+    const successPrimaryAction = document.getElementById("successPrimaryAction");
+    const rewardPrimaryAction = document.getElementById("rewardPrimaryAction");
+    const rewardBoostCard = document.getElementById("rewardBoostCard");
+    const rewardBoost = document.getElementById("rewardBoost");
+    const rewardCompare = document.getElementById("rewardCompare");
+    const detailStep = document.getElementById("detailStep");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailVisual = document.getElementById("detailVisual");
+    const detailAction = document.getElementById("detailAction");
+
+    let currentState = "events";
+    let flowTimer = null;
+    let selectedMode = "bold";
+
+    const modeConfig = {
+      base: {
+        label: "Pack",
+        potential: "Награда: 3 000 000 фишек",
+        rewardTitle: "Pack куплен",
+        rewardSubtitle: "3 млн за $3,99.",
+        rewardAmount: "Награда: 3 000 000",
+        rewardDelta: "Без риска. В следующий раз можно попробовать Lucky Buy.",
+        rewardBoost: "",
+        rewardCompare: "",
+        showBoost: false,
+        popupCta: "Купить Pack за $3,99",
+        successCta: "Забрать Pack",
+        rewardCta: "Попробовать Lucky Buy",
+        rewardGo: "popup"
+      },
+      safe: {
+        label: "Спокойный",
+        potential: "Потенциально до 4 500 000 фишек",
+        rewardTitle: "Хороший заход",
+        rewardSubtitle: "4,5 млн за те же $3,99.",
+        rewardAmount: "Награда: 4 500 000",
+        rewardDelta: "Можно попробовать еще.",
+        rewardBoost: "+1 500 000",
+        rewardCompare: "4,5 млн вместо 3 млн",
+        showBoost: true,
+        popupCta: "Рискнуть за $3,99",
+        successCta: "Открыть Lucky Buy",
+        rewardCta: "Еще раз рискнуть",
+        rewardGo: "popup"
+      },
+      bold: {
+        label: "Смелый",
+        potential: "Потенциально до 6 000 000 фишек",
+        rewardTitle: "Риск дал больше",
+        rewardSubtitle: "5 млн за те же $3,99.",
+        rewardAmount: "Награда: 5 000 000",
+        rewardDelta: "Следующий заход может дать еще больше.",
+        rewardBoost: "+2 000 000",
+        rewardCompare: "5 млн вместо 3 млн",
+        showBoost: true,
+        popupCta: "Рискнуть за $3,99",
+        successCta: "Открыть Lucky Buy",
+        rewardCta: "Еще раз рискнуть",
+        rewardGo: "popup"
+      }
+    };
+
+    const screenDetails = {
+      events: {
+        step: "Шаг 1",
+        title: "Экран страницы Events",
+        visual: "Игрок видит привычную страницу Events с текущими карточками и дополнительным входом в Lucky Buy внутри знакомого интерфейса.",
+        action: "Механика встраивается в существующий поток без слома базового опыта. На этом экране мы только подводим игрока к акции."
+      },
+      popup: {
+        step: "Шаг 2",
+        title: "Pop-up Lucky Buy",
+        visual: "Большой продающий pop-up с тремя опциями: обычный Pack, спокойный режим и выделенный смелый режим.",
+        action: "Игрок быстро сравнивает обычную покупку с риск-сценарием. Смелый вариант намеренно выглядит как самый эмоциональный и желанный выбор."
+      },
+      checkout: {
+        step: "Шаг 3",
+        title: "Экран покупки",
+        visual: "Стандартный checkout Appcharge с пакетом, ценой $3,99, методами оплаты и уже знакомым пользователю паттерном.",
+        action: "После выбора Lucky Buy пользователь не сталкивается с новой оплатой. Это снижает трение и держит фокус на ценности акции."
+      },
+      processing: {
+        step: "Шаг 4",
+        title: "Processing",
+        visual: "Короткий промежуточный экран с подтверждением обработки платежа.",
+        action: "Система завершает транзакцию и готовит переход к результату Lucky Buy без лишних действий со стороны игрока."
+      },
+      success: {
+        step: "Шаг 5",
+        title: "Экран удачной покупки",
+        visual: "Подтверждение успешной оплаты с выбранным режимом и потенциальной наградой.",
+        action: "Мы фиксируем, что покупка прошла, и удерживаем внимание игрока перед reveal, не раскрывая исход раньше времени."
+      },
+      reward: {
+        step: "Шаг 6",
+        title: "Итоговая награда",
+        visual: "Reveal с итоговой наградой, крупным сравнением против обычного Pack и акцентом на дополнительной выгоде от риска.",
+        action: "Экран эмоционально закрывает цикл Lucky Buy и показывает, что решение рискнуть уже окупилось даже без максимального исхода."
+      }
+    };
+
+    function clearFlowTimer() {
+      if (flowTimer) {
+        clearTimeout(flowTimer);
+        flowTimer = null;
+      }
+    }
+
+    function syncModeUI() {
+      const config = modeConfig[selectedMode];
+      successPotential.textContent = config.potential;
+      successMode.textContent = `Режим: ${config.label}`;
+      rewardTitle.textContent = config.rewardTitle;
+      rewardSubtitle.textContent = config.rewardSubtitle;
+      rewardAmount.textContent = config.rewardAmount;
+      rewardDelta.textContent = config.rewardDelta;
+      rewardBoost.textContent = config.rewardBoost;
+      rewardCompare.textContent = config.rewardCompare;
+      rewardBoostCard.style.display = config.showBoost ? "block" : "none";
+      popupPrimaryAction.textContent = config.popupCta;
+      successPrimaryAction.textContent = config.successCta;
+      rewardPrimaryAction.textContent = config.rewardCta;
+      rewardPrimaryAction.dataset.go = config.rewardGo;
+    }
+
+    function syncDetailUI(state) {
+      const detail = screenDetails[state];
+      detailStep.textContent = detail.step;
+      detailTitle.textContent = detail.title;
+      detailVisual.textContent = detail.visual;
+      detailAction.textContent = detail.action;
+    }
+
+    function setState(state) {
+      clearFlowTimer();
+      currentState = state;
+
+      screens.forEach((screen) => {
+        screen.classList.toggle("is-active", screen.dataset.state === state);
+      });
+
+      stateButtons.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.target === state);
+      });
+
+      syncDetailUI(state);
+    }
+
+    function nextState() {
+      const index = states.indexOf(currentState);
+      setState(states[Math.min(index + 1, states.length - 1)]);
+    }
+
+    function prevState() {
+      const index = states.indexOf(currentState);
+      setState(states[Math.max(index - 1, 0)]);
+    }
+
+    function playFlow() {
+      const sequence = [
+        ["events", 900],
+        ["popup", 1400],
+        ["checkout", 1400],
+        ["processing", 1600],
+        ["success", 1600],
+        ["reward", 1600]
+      ];
+
+      clearFlowTimer();
+      let cursor = 0;
+
+      function step() {
+        const [state, delay] = sequence[cursor];
+        setState(state);
+        cursor += 1;
+        if (cursor < sequence.length) {
+          flowTimer = setTimeout(step, delay);
+        }
+      }
+
+      step();
+    }
+
+    document.querySelectorAll("[data-go]").forEach((button) => {
+      button.addEventListener("click", () => setState(button.dataset.go));
+    });
+
+    document.querySelectorAll("[data-open-popup]").forEach((button) => {
+      button.addEventListener("click", () => setState("popup"));
+    });
+
+    stateButtons.forEach((button) => {
+      button.addEventListener("click", () => setState(button.dataset.target));
+    });
+
+    modeCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        if (!card.dataset.mode) {
+          return;
+        }
+        modeCards.forEach((item) => item.classList.remove("is-selected"));
+        card.classList.add("is-selected");
+        selectedMode = card.dataset.mode;
+        syncModeUI();
+      });
+    });
+
+    nextButton.addEventListener("click", nextState);
+    prevButton.addEventListener("click", prevState);
+    playFlowButton.addEventListener("click", playFlow);
+    syncModeUI();
+    syncDetailUI(currentState);
+  </script>
+</body>
+</html>
