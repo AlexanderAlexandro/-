@@ -1,0 +1,1 @@
+{"currentUser": {"id": "user_a0e46031fd50", "username": "rtb001", "displayName": "Realtime B", "online": false}, "chats": [{"id": "chat_76cd347f25eb", "peer": {"id": "user_da257371e7dd", "username": "rta001", "displayName": "Realtime A", "online": false}, "updatedAt": "2026-04-08T11:23:02.344962+00:00", "lastMessage": null}], "messagesByChat": {"chat_76cd347f25eb": []}}

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Messenger MVP</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="layout-shell">
+    <section class="boot-screen" id="bootView">
+      <div class="boot-card">
+        <div class="loader-orb" id="bootLoader"></div>
+        <p class="eyebrow" id="bootEyebrow">Loading workspace</p>
+        <h1 id="bootTitle">Загружаем мессенджер</h1>
+        <p class="boot-copy" id="bootMessage">Проверяем сессию и подготавливаем список чатов.</p>
+        <button class="secondary-button hidden" id="bootRetryButton" type="button">Повторить</button>
+      </div>
+    </section>
+
+    <section class="auth-screen hidden" id="authView">
+      <div class="auth-screen__intro">
+        <p class="eyebrow">Simple Browser MVP</p>
+        <h1>Мини-мессенджер с чистым UI и realtime-основой</h1>
+        <p class="intro-copy">
+          Каркас проекта уже включает вход, регистрацию, список чатов, окно переписки,
+          отправку текстовых сообщений и базовый online status.
+        </p>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-card__index">01</span>
+            <h2>Чаты и переписка</h2>
+            <p>Слева список диалогов, справа активный разговор и поле ввода.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-card__index">02</span>
+            <h2>Realtime без лишнего</h2>
+            <p>Сообщения и статусы прилетают через Server-Sent Events.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-card__index">03</span>
+            <h2>Готово для развития</h2>
+            <p>Логику легко перенести на БД, нормальную auth-схему и WebSocket.</p>
+          </article>
+        </div>
+
+        <div class="demo-box">
+          <p>После загрузки seed доступны demo-аккаунты:</p>
+          <p><strong>alice</strong> / <strong>Password123!</strong></p>
+          <p><strong>marco</strong> / <strong>Password123!</strong></p>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-card__tabs">
+          <button class="tab-button is-active" id="toggleLogin" type="button">Вход</button>
+          <button class="tab-button" id="toggleRegister" type="button">Регистрация</button>
+        </div>
+
+        <p class="auth-copy" id="authCopy">Войдите, чтобы открыть приватную часть мессенджера.</p>
+        <p class="form-error" id="authError" aria-live="polite"></p>
+
+        <form class="auth-form" id="loginForm" novalidate>
+          <label class="field">
+            <span>Логин</span>
+            <input
+              id="loginUsername"
+              name="username"
+              placeholder="alice"
+              autocomplete="username"
+              spellcheck="false"
+              minlength="3"
+              maxlength="20"
+              pattern="[a-zA-Z0-9_]{3,20}"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Пароль</span>
+            <input
+              id="loginPassword"
+              name="password"
+              type="password"
+              placeholder="Password123!"
+              autocomplete="current-password"
+              minlength="8"
+              maxlength="64"
+              required
+            />
+          </label>
+          <button class="primary-button" type="submit">Войти</button>
+        </form>
+
+        <form class="auth-form hidden" id="registerForm" novalidate>
+          <label class="field">
+            <span>Имя</span>
+            <input
+              id="registerDisplayName"
+              name="displayName"
+              placeholder="Anna Petrova"
+              autocomplete="name"
+              minlength="2"
+              maxlength="30"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Логин</span>
+            <input
+              id="registerUsername"
+              name="username"
+              placeholder="anna_p"
+              autocomplete="username"
+              spellcheck="false"
+              minlength="3"
+              maxlength="20"
+              pattern="[a-zA-Z0-9_]{3,20}"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Пароль</span>
+            <input
+              id="registerPassword"
+              name="password"
+              type="password"
+              placeholder="Минимум 8 символов"
+              autocomplete="new-password"
+              minlength="8"
+              maxlength="64"
+              required
+            />
+          </label>
+          <p class="auth-helper">Логин: 3-20 символов, буквы, цифры или _. Пароль: 8-64 символа без пробелов по краям.</p>
+          <button class="primary-button" type="submit">Создать аккаунт</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="messenger-screen hidden" id="appView">
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <div>
+            <p class="eyebrow">Your workspace</p>
+            <h2 id="currentUserName">Пользователь</h2>
+            <p class="user-handle" id="currentUserHandle">@user</p>
+          </div>
+          <button class="secondary-button" id="logoutButton" type="button">Выйти</button>
+        </div>
+
+        <div class="sidebar__actions">
+          <div class="realtime-pill" id="connectionStatus">Realtime: offline</div>
+          <div class="sidebar__action-buttons">
+            <button class="secondary-button secondary-button--compact" id="newChatToggleButton" type="button">
+              Новый диалог
+            </button>
+            <button class="secondary-button secondary-button--compact" id="reloadAppButton" type="button">Обновить</button>
+          </div>
+        </div>
+
+        <section class="new-chat-panel hidden" id="newChatPanel" aria-live="polite">
+          <div class="new-chat-panel__header">
+            <div>
+              <p class="eyebrow">New direct chat</p>
+              <h3>Выберите пользователя</h3>
+            </div>
+            <button class="secondary-button secondary-button--compact" id="newChatCloseButton" type="button">
+              Закрыть
+            </button>
+          </div>
+          <p class="new-chat-copy">
+            Создаём только личные one-to-one диалоги. Если чат уже есть, мы просто откроем его.
+          </p>
+          <p class="form-error" id="newChatError" aria-live="polite"></p>
+          <div class="new-chat-list" id="newChatList"></div>
+        </section>
+
+        <div class="sidebar__section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Chats</p>
+              <h3>Диалоги</h3>
+            </div>
+            <span class="section-count" id="chatCount">0</span>
+          </div>
+
+          <div class="chat-list" id="chatList"></div>
+        </div>
+      </aside>
+
+      <main class="chat-panel">
+        <div class="panel-state" id="panelState"></div>
+
+        <div class="chat-panel__body hidden" id="chatBody">
+          <header class="chat-header">
+            <div class="chat-header__main">
+              <button
+                class="secondary-button secondary-button--compact chat-back-button hidden"
+                id="chatBackButton"
+                type="button"
+              >
+                Назад
+              </button>
+              <div>
+                <p class="eyebrow chat-header__eyebrow">Active chat</p>
+                <h2 id="chatTitle">Диалог</h2>
+              </div>
+            </div>
+            <div class="chat-header__side">
+              <p class="chat-meta" id="chatMeta">offline</p>
+              <p class="chat-meta-subtle" id="chatLastActivity">Сообщений пока нет</p>
+            </div>
+          </header>
+
+          <div class="message-list" id="messageList"></div>
+
+          <form class="composer" id="composerForm" novalidate>
+            <label class="composer__field">
+              <textarea
+                id="messageInput"
+                rows="1"
+                maxlength="500"
+                placeholder="Введите сообщение"
+                required
+              ></textarea>
+            </label>
+            <button class="primary-button" id="sendButton" type="submit">Отправить</button>
+          </form>
+          <p class="form-error composer-error" id="composerError"></p>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
